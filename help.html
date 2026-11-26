@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Finder — How it works</title>
+<style>
+  :root { --bg:#f5f6f8; --card:#fff; --ink:#1d2330; --muted:#6b7280; --line:#e5e7eb; --brand:#1f5eff; --ok:#0f9d58; --warn:#c47f00; --bad:#d93025; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; }
+  header { background:var(--ink); color:#fff; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:5; }
+  header h1 { font-size:18px; margin:0; }
+  header small { opacity:.7; display:block; font-size:12px; }
+  header a { color:#fff; text-decoration:none; font-size:13px; font-weight:600; background:rgba(255,255,255,.15); padding:8px 12px; border-radius:8px; white-space:nowrap; }
+  main { max-width:760px; margin:0 auto; padding:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px; }
+  .toc a { display:flex; gap:10px; align-items:center; padding:11px 12px; border:1px solid var(--line); border-radius:10px; margin-bottom:8px; text-decoration:none; color:var(--ink); font-weight:600; font-size:15px; background:#fff; }
+  .toc a span { color:var(--muted); font-weight:500; font-size:13px; margin-left:auto; }
+  .page { display:none; }
+  .page.on { display:block; }
+  h2 { font-size:19px; margin:0 0 4px; }
+  .pno { font-size:12px; color:var(--muted); margin-bottom:12px; }
+  h3 { font-size:15px; margin:18px 0 6px; }
+  p, li { font-size:15px; }
+  ul, ol { padding-left:22px; margin:6px 0; }
+  li { margin-bottom:5px; }
+  code { background:#eef2ff; color:#1e3a8a; padding:1px 6px; border-radius:5px; font-size:13.5px; word-break:break-all; }
+  .box { border-radius:10px; padding:10px 12px; margin:12px 0; font-size:14.5px; }
+  .tip { background:#ecfdf3; border-left:4px solid var(--ok); }
+  .warn { background:#fffbeb; border-left:4px solid var(--warn); }
+  .stop { background:#fdecea; border-left:4px solid var(--bad); }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:8px 0; }
+  th, td { border:1px solid var(--line); padding:7px 8px; text-align:left; vertical-align:top; }
+  th { background:#f8fafc; }
+  .nav { display:flex; gap:8px; justify-content:space-between; margin-top:16px; }
+  .nav button { flex:1; padding:12px; border:0; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; background:#eef2ff; color:var(--brand); }
+  .nav button.next { background:var(--brand); color:#fff; }
+  .nav button:disabled { opacity:.35; }
+  .dots { display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-top:12px; }
+  .dots i { width:8px; height:8px; border-radius:50%; background:#d1d5db; cursor:pointer; }
+  .dots i.on { background:var(--brand); }
+  footer { text-align:center; font-size:12px; color:var(--muted); padding:10px 0 24px; }
+</style>
+</head>
+<body>
+<header>
+  <div><h1>❓ How Lead Finder works</h1><small>Abode Digital Technology · Making Life Easier</small></div>
+  <a href="./">← Back to app</a>
+</header>
+
+<main>
+  <!-- ============ PAGE 0: CONTENTS ============ -->
+  <section class="page card" data-title="Contents">
+    <h2>Contents</h2>
+    <div class="pno">Tap any topic, or use Next to read in order.</div>
+    <div class="toc" id="toc"></div>
+  </section>
+
+  <!-- ============ PAGE 1 ============ -->
+  <section class="page card" data-title="What is Lead Finder?">
+    <h2>1. What is Lead Finder?</h2>
+    <p>Lead Finder finds <b>businesses and service providers</b> on Google for any <b>topic</b> and <b>area</b> you choose, and gives you their <b>name, address, phone number, website and map location</b>.</p>
+    <h3>What it is used for</h3>
+    <ul>
+      <li><b>My Kaarigar:</b> finding plumbers, electricians, AC technicians and other skilled people to invite onto the app.</li>
+      <li><b>Let Us Care:</b> finding carers, nursing bureaus, babysitting agencies and physiotherapists.</li>
+      <li><b>Anything else:</b> pharma distributors, CA firms, schools, shops, in India and 14 other countries.</li>
+    </ul>
+    <h3>The 4 parts of the screen</h3>
+    <table>
+      <tr><th>Part</th><th>What it does</th></tr>
+      <tr><td>⚙️ Settings</td><td>Your API keys, WhatsApp messages and trade lists</td></tr>
+      <tr><td>🔎 Find providers</td><td>Choose app, trades, areas, country, then Search</td></tr>
+      <tr><td>🤖 Agent mode</td><td>Give a goal in plain words and AI does the searching (needs a Claude key)</td></tr>
+      <tr><td>📋 Provider database</td><td>All saved leads: invite, call, track status, export</td></tr>
+    </table>
+    <div class="box tip">Everything is stored <b>only on this phone's browser</b>. Nothing is sent to any server of ours.</div>
+  </section>
+
+  <!-- ============ PAGE 2 ============ -->
+  <section class="page card" data-title="How it works inside">
+    <h2>2. How it works inside</h2>
+    <ol>
+      <li>You choose a trade (e.g. <i>Plumber</i>) and an area (e.g. <i>Nallasopara</i>).</li>
+      <li>Lead Finder asks <b>Google Places</b>, the same data as Google Maps, for <i>"plumber in Nallasopara"</i>.</li>
+      <li>Google returns up to <b>20 businesses per page</b>.</li>
+      <li>Lead Finder removes <b>closed businesses</b>, <b>duplicates</b> and (if you choose) numbers that are <b>not mobiles</b>.</li>
+      <li>The rest are saved in the <b>Provider database</b> on your phone.</li>
+      <li>You invite them on WhatsApp, and track who replied and who registered.</li>
+    </ol>
+    <h3>Where the data comes from</h3>
+    <p>Only from <b>Google's official business listings</b>: businesses that put themselves on Google Maps. Lead Finder does not scrape websites or collect private people's data.</p>
+    <div class="box warn">Google data can be <b>old or wrong</b>. Some numbers may be switched off or belong to someone else. Always be polite in the first message.</div>
+  </section>
+
+  <!-- ============ PAGE 3 ============ -->
+  <section class="page card" data-title="One-time setup: Google key">
+    <h2>3. One-time setup: the Google key</h2>
+    <p>Lead Finder needs a <b>Google Places API key</b>. This is already done for Abode Digital Technology in the Google Cloud project <code>Lead Finder</code>.</p>
+    <h3>If you ever need a new key</h3>
+    <ol>
+      <li>Open <code>console.cloud.google.com</code>. Use <b>Desktop site</b> in Chrome.</li>
+      <li>Select the project <b>Lead Finder</b>, not Kaarigar or Firebase projects.</li>
+      <li>☰ → <b>APIs &amp; Services → Library</b> → <b>Places API (New)</b> → <b>Enable</b>.</li>
+      <li>☰ → <b>APIs &amp; Services → Credentials</b> → <b>+ Create credentials → API key</b>.</li>
+      <li>Restrict it: <b>Websites</b> → <code>qmsmumbai-technician.github.io/*</code>, and API → <b>Places API (New)</b> only.</li>
+      <li>Paste it in Lead Finder → ⚙️ Settings → first box → <b>Save settings</b>.</li>
+    </ol>
+    <div class="box stop"><b>Never</b> share the key on WhatsApp or post it publicly. Because of the website restriction, it only works on your GitHub site.</div>
+    <div class="box warn">Never add billing to the <b>Kaarigar</b> or <b>Let Us Care</b> Firebase projects. They stay on the free plan. Billing is only on <b>Lead Finder</b>.</div>
+  </section>
+
+  <!-- ============ PAGE 4 ============ -->
+  <section class="page card" data-title="Cost and free calls">
+    <h2>4. Cost and free calls</h2>
+    <table>
+      <tr><th>Item</th><th>Details</th></tr>
+      <tr><td>1 Google call</td><td>1 page of results = up to 20 businesses</td></tr>
+      <tr><td>Free every month</td><td><b>1,000 calls</b>. Resets on the 1st, unused calls don't carry over</td></tr>
+      <tr><td>After 1,000</td><td>About ₹3 per call (Google's global price; India may be lower)</td></tr>
+      <tr><td>Free trial</td><td>$300 credit for 90 days (till about late Feb 2027)</td></tr>
+      <tr><td>Empty search</td><td>Still counts as 1 call</td></tr>
+    </table>
+    <h3>How many calls a search uses</h3>
+    <p><b>Trades × Areas × Pages.</b> Example: 2 trades × 3 areas × 1 page (20 results) = <b>6 calls</b>.</p>
+    <p>The app asks you to confirm any search over 10 calls.</p>
+    <h3>After the 90-day trial</h3>
+    <ul>
+      <li>The account <b>pauses</b> and is <b>not</b> charged automatically.</li>
+      <li>To continue, you click <b>Upgrade</b> yourself. The 1,000 free calls a month continue after that.</li>
+    </ul>
+    <div class="box tip">Stay under about <b>30 calls a day</b> and Lead Finder costs nothing. Set a ₹500 budget alert: Google Cloud ☰ → Billing → <b>Budgets &amp; alerts</b>.</div>
+    <p>Check usage: Google Cloud ☰ → <b>Google Maps Platform → Metrics</b>.</p>
+  </section>
+
+  <!-- ============ PAGE 5 ============ -->
+  <section class="page card" data-title="Searching step by step">
+    <h2>5. Searching step by step</h2>
+    <h3>Choose a tab</h3>
+    <table>
+      <tr><th>Tab</th><th>Use it for</th></tr>
+      <tr><td>My Kaarigar</td><td>Technicians. Ready WhatsApp invite + import lines</td></tr>
+      <tr><td>Let Us Care</td><td>Carers and care agencies. Ready invite</td></tr>
+      <tr><td>Free search</td><td>Any topic. Plain WhatsApp button only</td></tr>
+    </table>
+    <h3>Then</h3>
+    <ol>
+      <li><b>Tick trades</b> (Kaarigar / Let Us Care), or type a <b>Topic</b> and <b>Region</b> (Free search).</li>
+      <li><b>Areas:</b> separate with commas, e.g. <code>Nallasopara, Vasai, Virar</code>.</li>
+      <li><b>Country:</b> India by default.</li>
+      <li><b>Results per search:</b> 20 (1 call), 40 (2 calls) or 60 (3 calls).</li>
+      <li><b>Keep only:</b> <i>Mobile numbers</i> (best for WhatsApp), <i>Any phone</i>, or <i>Everything</i>.</li>
+      <li>Tap <b>Search</b>. A line like <i>"Done. 19 new providers added…"</i> appears.</li>
+    </ol>
+    <div class="box tip">Test a new trade in <b>one area first</b>. Rare trades (e.g. Vastu Consultant) need bigger areas like Vasai or Virar.</div>
+  </section>
+
+  <!-- ============ PAGE 6 ============ -->
+  <section class="page card" data-title="Areas and countries">
+    <h2>6. Areas and countries</h2>
+    <h3>Any area in India</h3>
+    <ul>
+      <li>City, town, neighbourhood or district: <code>Andheri West, Thane, Pune, Surat</code>.</li>
+      <li>Add the city to common names: <code>Shivaji Nagar, Pune</code>.</li>
+      <li>Split big cities into areas (each search returns at most 60): <code>Andheri, Borivali, Dadar</code>, not just "Mumbai".</li>
+      <li>Small villages have few listings, so search the nearest town.</li>
+    </ul>
+    <h3>15 countries</h3>
+    <p>India, United States, United Kingdom, Canada, Australia, <b>UAE</b>, <b>Saudi Arabia</b>, <b>Qatar</b>, <b>Kuwait</b>, <b>Oman</b>, <b>Bahrain</b>, Singapore, Nepal, Bangladesh, Sri Lanka.</p>
+    <ul>
+      <li><b>Dubai</b> is in the UAE: choose <b>UAE</b> and type <code>Dubai</code> (or <code>Deira, Bur Dubai, Al Barsha</code>).</li>
+      <li>Outside India, Google can't tell mobiles from landlines, so all full numbers are kept. Check WhatsApp before relying on a number.</li>
+    </ul>
+  </section>
+
+  <!-- ============ PAGE 7 ============ -->
+  <section class="page card" data-title="Provider database">
+    <h2>7. The Provider database</h2>
+    <p>Every saved lead appears as a card showing name, app, trade, Google type, rating, area, address and phone.</p>
+    <h3>Buttons on each card</h3>
+    <table>
+      <tr><th>Button</th><th>What it does</th></tr>
+      <tr><td>🟢 WhatsApp invite</td><td>Opens WhatsApp with the ready message. Card becomes <b>Invited</b></td></tr>
+      <tr><td>Call</td><td>Opens your dialler</td></tr>
+      <tr><td>Website / Map</td><td>Opens their website or Google Maps</td></tr>
+      <tr><td>Status ▾</td><td>Change status by hand</td></tr>
+      <tr><td>Remove</td><td>Deletes the lead (e.g. if they reply STOP)</td></tr>
+    </table>
+    <h3>Filters</h3>
+    <p>Filter by <b>app</b>, <b>status</b> and <b>trade</b>, sort by Newest / AI score / Rating / Name, or type in the search box. The grey chips show counts for each status.</p>
+    <p>A business found under two trades keeps <b>both</b> trades (maximum 2, like the apps).</p>
+  </section>
+
+  <!-- ============ PAGE 8 ============ -->
+  <section class="page card" data-title="Status and outreach">
+    <h2>8. Status and WhatsApp outreach</h2>
+    <table>
+      <tr><th>Status</th><th>Meaning</th></tr>
+      <tr><td>New</td><td>Found, not contacted yet</td></tr>
+      <tr><td>Invited</td><td>WhatsApp invite sent (set automatically)</td></tr>
+      <tr><td>Interested</td><td>Replied positively</td></tr>
+      <tr><td>Registered</td><td>Joined the app</td></tr>
+      <tr><td>Not interested</td><td>Said no</td></tr>
+      <tr><td>Wrong number</td><td>Number doesn't belong to this business</td></tr>
+    </table>
+    <h3>Good practice</h3>
+    <ul>
+      <li>Send <b>one by one</b>, about 5–10 a day, never a bulk blast. Too many messages to strangers can get your WhatsApp number <b>blocked</b>.</li>
+      <li>Use your <b>WhatsApp Business</b> number.</li>
+      <li>Every message ends with <i>"Reply STOP…"</i>. If they reply STOP, tap <b>Remove</b>.</li>
+      <li>Change the message in ⚙️ Settings. You can use <code>{name}</code>, <code>{trade}</code>, <code>{area}</code>.</li>
+    </ul>
+  </section>
+
+  <!-- ============ PAGE 9 ============ -->
+  <section class="page card" data-title="Into My Kaarigar">
+    <h2>9. Getting providers into My Kaarigar</h2>
+    <div class="box warn">Never import people who haven't agreed. Only <b>Interested</b> or <b>Registered</b> providers.</div>
+    <ol>
+      <li>Invite on WhatsApp. When they agree, set status to <b>Interested</b>.</li>
+      <li>Best: they <b>install the app and register themselves</b>, with reverse-WhatsApp verification as usual.</li>
+      <li>If you want to add them yourself: Provider database → filter app <b>My Kaarigar</b> → tap <b>📥 Copy import lines</b>.</li>
+      <li>Open the Kaarigar <b>admin panel → Import</b>, paste, check the list, then add.</li>
+    </ol>
+    <h3>Import line format</h3>
+    <p><code>Name, Trade, 10-digit mobile, Area, lat, lng</code></p>
+    <p>The lat, lng gives the correct "~km" distance in the customer app, even outside your area list.</p>
+    <div class="box tip">Trade names in ⚙️ Settings must match the app's trade names. The Import check flags any that don't.</div>
+  </section>
+
+  <!-- ============ PAGE 10 ============ -->
+  <section class="page card" data-title="Let Us Care">
+    <h2>10. Using it for Let Us Care</h2>
+    <ul>
+      <li>Google has few <b>individual</b> carers. You will mostly find <b>nursing bureaus, babysitting agencies, japa-maid services and physio clinics</b>.</li>
+      <li>One agency can bring <b>many carers</b>, so talk to agencies first.</li>
+      <li>The Let Us Care invite says <b>register free</b> (the app takes no money).</li>
+      <li>Carers still register themselves and verify by WhatsApp. Families check ID themselves, as in the app.</li>
+    </ul>
+    <h3>Services searched</h3>
+    <p>Toddler Care, Elder Care, Patient Care, Mother and newborn care, Special needs care, Physiotherapy at home. Edit the list and search words in ⚙️ Settings.</p>
+  </section>
+
+  <!-- ============ PAGE 11 ============ -->
+  <section class="page card" data-title="Settings explained">
+    <h2>11. Settings explained</h2>
+    <table>
+      <tr><th>Setting</th><th>Purpose</th></tr>
+      <tr><td>Google Places API key</td><td>Required for all searches</td></tr>
+      <tr><td>Claude API key</td><td>Optional. Only for AI scoring and Agent mode</td></tr>
+      <tr><td>Claude model</td><td><code>claude-haiku-5-5</code>, cheapest and good enough</td></tr>
+      <tr><td>WhatsApp messages</td><td>One for Kaarigar, one for Let Us Care</td></tr>
+      <tr><td>Trade lists</td><td>One line each: <code>Trade name | Google search words</code></td></tr>
+    </table>
+    <h3>Trade list example</h3>
+    <p><code>Kabadi Wala | scrap dealer kabadi</code>. The left side is saved as the trade, the right side is what Google searches.</p>
+    <ul>
+      <li>Add a new trade: add a new line, then tap <b>Save settings</b>.</li>
+      <li>Messed up the list? Tap <b>Reset trade lists to default</b>.</li>
+    </ul>
+  </section>
+
+  <!-- ============ PAGE 12 ============ -->
+  <section class="page card" data-title="AI scoring and Agent mode">
+    <h2>12. AI scoring and Agent mode</h2>
+    <p>Both need a <b>Claude API key</b> from <code>console.anthropic.com</code>, which is paid by usage.</p>
+    <h3>✨ AI score new leads</h3>
+    <p>Claude reads each new lead and gives a <b>1–10 score</b>, a tag (Individual / Small shop / Agency / Big company / Unrelated) and a one-line reason. Sort by <b>AI score</b> to invite the best first.</p>
+    <h3>🤖 Agent mode</h3>
+    <ol>
+      <li>Write a goal: <i>"Find 20 plumbers with mobile numbers in Nallasopara. Skip big showrooms."</i></li>
+      <li>Choose the app and a <b>Google call budget</b> (5–30). It never goes over.</li>
+      <li>Tap <b>▶ Run agent</b>. It plans, searches, judges, saves and stops by itself.</li>
+      <li>Watch the log: 🧠 thinking · 🔎 searching · 💾 saved · ✅ done. Tap <b>■ Stop</b> any time.</li>
+    </ol>
+    <h3>Claude cost (estimate)</h3>
+    <p>About <b>₹1 per agent run</b> with Haiku, roughly ₹50–150 a month for normal use. New Anthropic accounts get some free test credit.</p>
+    <div class="box tip">Coming later: <b>Lead Agent</b>, a chat app with its own icon where you talk to the agent like a chat.</div>
+  </section>
+
+  <!-- ============ PAGE 13 ============ -->
+  <section class="page card" data-title="Backup and export">
+    <h2>13. Backup and export</h2>
+    <div class="box stop">Leads live <b>only in this phone's Chrome</b>. Clearing Chrome data, uninstalling Chrome or changing phone <b>deletes them</b>.</div>
+    <h3>⬇️ Export CSV</h3>
+    <ul>
+      <li>Downloads all leads <b>shown by the current filters</b> as a CSV that opens in Excel or Google Sheets.</li>
+      <li>Columns: app, country, name, trade, status, invited date, score, phone, address, area, lat, lng, website, rating, map link, and more.</li>
+      <li>Do it <b>once a week</b> and save it to Google Drive, like your Kaarigar admin backup.</li>
+    </ul>
+    <h3>Different phone or browser</h3>
+    <p>Each phone or browser has its own database and settings. You need to paste the key again there.</p>
+  </section>
+
+  <!-- ============ PAGE 14 ============ -->
+  <section class="page card" data-title="Rules to follow">
+    <h2>14. Rules to follow</h2>
+    <ul>
+      <li><b>Google terms:</b> use the data for your own outreach. Don't sell lists of Google data or build a permanent copy of Google's database. Results come from Google.</li>
+      <li><b>India DPDP Act:</b> contact businesses only, for a clear purpose, and delete anyone who asks.</li>
+      <li><b>TRAI:</b> avoid unsolicited commercial calls and SMS to numbers on the DND list. WhatsApp messages should be personal and one by one.</li>
+      <li><b>WhatsApp:</b> no bulk blasts. Always honour STOP.</li>
+      <li><b>Selling Lead Finder:</b> sell the software, with each buyer using their own Google and Claude keys. Don't sell the data.</li>
+    </ul>
+    <p style="font-size:13px;color:var(--muted)">This is general guidance, not legal advice.</p>
+  </section>
+
+  <!-- ============ PAGE 15 ============ -->
+  <section class="page card" data-title="Problems and fixes">
+    <h2>15. Problems and fixes</h2>
+    <table>
+      <tr><th>Problem</th><th>Fix</th></tr>
+      <tr><td>404 File not found</td><td>Use <code>qmsmumbai-technician.github.io/lead-finder/</code>. The repo file must be named <code>index.html</code></td></tr>
+      <tr><td>"Add your Google key first"</td><td>Paste the key in ⚙️ Settings and tap Save settings</td></tr>
+      <tr><td>"API key not valid" / "referer blocked"</td><td>Wait 5 minutes after changing key restrictions. Check the website restriction is <code>qmsmumbai-technician.github.io/*</code></td></tr>
+      <tr><td>Billing / permission error</td><td>The Lead Finder project needs billing linked (My Billing Account 1)</td></tr>
+      <tr><td>0 new providers</td><td>Try a bigger area, other search words, or Keep only → Any phone</td></tr>
+      <tr><td>"Tick at least one trade"</td><td>Tick a trade chip before Search</td></tr>
+      <tr><td>New version not showing</td><td>Wait 1–2 minutes after uploading to GitHub, then reload</td></tr>
+      <tr><td>Uploaded file became "index (1).html"</td><td>Delete the old index.html, then rename the new one to index.html</td></tr>
+      <tr><td>Leads disappeared</td><td>Chrome data was cleared. Restore from your CSV backup</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ PAGE 16 ============ -->
+  <section class="page card" data-title="Quick daily routine">
+    <h2>16. Quick daily routine</h2>
+    <ol>
+      <li>Open Lead Finder from your home-screen icon.</li>
+      <li>Search 1–2 trades in 1–2 areas (about 2–4 calls).</li>
+      <li>Look through new cards and <b>Remove</b> unrelated ones.</li>
+      <li>Send <b>5–10 WhatsApp invites</b>, one by one.</li>
+      <li>Update statuses for anyone who replied.</li>
+      <li>Move <b>Interested</b> people into the app (they register, or you use import lines).</li>
+      <li>Friday: <b>Export CSV</b> to Google Drive.</li>
+    </ol>
+    <div class="box tip">10 invites a day is about 300 a month, all within the free Google allowance.</div>
+    <p style="text-align:center;margin-top:18px"><b>Abode Digital Technology</b><br><span style="color:var(--muted);font-size:13px">abodedigitaltech@gmail.com · 98600 46593</span></p>
+  </section>
+
+  <div class="card" style="padding:12px">
+    <div class="nav">
+      <button id="prev" onclick="go(cur-1)">← Previous</button>
+      <button id="next" class="next" onclick="go(cur+1)">Next →</button>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+  <footer>Lead Finder guide · Abode Digital Technology</footer>
+</main>
+
+<script>
+const pages = [...document.querySelectorAll('.page')];
+let cur = 0;
+document.getElementById('toc').innerHTML = pages.slice(1).map((p, i) =>
+  `<a href="#p${i+1}" onclick="go(${i+1});return false;">${i+1}. ${p.dataset.title}<span>›</span></a>`).join('');
+document.getElementById('dots').innerHTML = pages.map((_, i) => `<i onclick="go(${i})"></i>`).join('');
+function go(n){
+  cur = Math.max(0, Math.min(pages.length - 1, n));
+  pages.forEach((p, i) => p.classList.toggle('on', i === cur));
+  document.querySelectorAll('#dots i').forEach((d, i) => d.classList.toggle('on', i === cur));
+  document.getElementById('prev').disabled = cur === 0;
+  const nx = document.getElementById('next');
+  nx.disabled = cur === pages.length - 1;
+  nx.textContent = cur === 0 ? 'Start reading →' : 'Next →';
+  history.replaceState(null, '', cur ? '#p' + cur : '#');
+  window.scrollTo(0, 0);
+}
+go(parseInt((location.hash.match(/\d+/) || [0])[0]) || 0);
+</script>
+</body>
+</html>
